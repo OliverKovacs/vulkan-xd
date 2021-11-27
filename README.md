@@ -34,7 +34,7 @@ npm install -g @bazel/bazelisk
 
 Download the project:
 ```bash
-git clone https://github.com/OliverKovacs/vulkan-xd && cd vulkan-xd
+git clone https://github.com/OliverKovacs/vulkan-xd && cd vulkan-xd && git submodule update --recursive --init
 ```
 
 Build the project:
