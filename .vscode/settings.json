@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "fstream": "cpp",
+        "*.tcc": "cpp",
+        "clocale": "cpp",
+        "*.def": "cpp",
+        "bitset": "cpp",
+        "sstream": "cpp"
+    }
+}

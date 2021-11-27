@@ -1,0 +1,14 @@
+## Todo:
+- UBO wrapper struct for dynamic length UBOs
+- dynamic creation/destruction of SSBOs
+- dynamic descriptor sets
+- dynamic shader compilation
+- officially support building on Windows
+- dynamic push constants 
+- implement transformation matrices
+- implement scene graphs
+- dynamic layout indexing of UBOs/SSBOs/Textures in shader
+- implement proper ECS
+- implement (optional) in-shader vertex indexing
+- evaluate storing once processed vertex positions in a writeable SSBO as a substitute for post-T&L caching
+- implement wireframe rendering
