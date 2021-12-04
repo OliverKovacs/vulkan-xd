@@ -23,13 +23,15 @@ Documentation will be available in the future.
 
 Install these dependencies:
 ```bash
-sudo apt update && sudo apt install vulkan-sdk mesa-common-dev libglfw3 libglfw3-dev libglm-dev xrandx-dev libxinerama-dev libxcursor-dev libxi-dev libxxf86vm-dev git clang
+wget -qO - https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.2.198-focal.list https://packages.lunarg.com/vulkan/1.2.198/lunarg-vulkan-1.2.198-focal.list
+sudo apt update && sudo apt install vulkan-sdk mesa-common-dev libglfw3 libglfw3-dev libglm-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxxf86vm-dev git clang
 ```
 
 Install [Bazel](https://docs.bazel.build/versions/4.2.1/install-ubuntu.html). Example using [npm](https://nodejs.org/en/):
 
 ```bash
-npm install -g @bazel/bazelisk
+sudo npm install -g @bazel/bazelisk
 ```
 
 Download the project:
@@ -39,7 +41,7 @@ git clone https://github.com/OliverKovacs/vulkan-xd && cd vulkan-xd && git submo
 
 Build the project:
 ```bash
-bazel build //src/main:main
+sudo bazel build //src/main:main
 ```
 
 Run:
