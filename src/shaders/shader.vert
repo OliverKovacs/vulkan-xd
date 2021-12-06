@@ -38,7 +38,7 @@ struct Transform {
 
 vec3 xy_scale = vec3(1.0, 1.0, 1.0);
 
-float canvas_z = 2.0;
+float canvas_z = 4.0;
 float camera_z = 0.0;
 
 void fetchVertex(inout float[n] vertex, int stride, int offset) {

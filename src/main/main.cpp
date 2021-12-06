@@ -36,8 +36,9 @@ void Vulkan::createModel() {
     xdvk::hypercubeIndices(indices[0], DIMENSION, 0, 0);
     xdvk::icositetrachoronIndices(indices[1], 0, 0);
 
-    xdvk::hypercubeVertices(scene.entities[0].geometry.vertices, DIMENSION, 0.3, 0, 0);
-    xdvk::icositetrachoronVertices(scene.entities[1].geometry.vertices, 0.6, 0, 0);
+    const float size = 0.45;
+    xdvk::hypercubeVertices(scene.entities[0].geometry.vertices, DIMENSION, size, 0, 0);
+    xdvk::icositetrachoronVertices(scene.entities[1].geometry.vertices, 2 * size, 0, 0);
 
     for (size_t i = 0; i < scene.entities.size(); i++) {
         Vertex vertex{ static_cast<glm::float32>(i) };
@@ -59,8 +60,8 @@ void Vulkan::createModel() {
 
     storageVectors[1].resize(scene.entities.size() * xdvk::transformSize(DIMENSION));
 
-    scene.entities[0].transform.position[0] = -0.6;
-    scene.entities[1].transform.position[0] =  0.6;
+    scene.entities[0].transform.position[0] = -1.0;
+    scene.entities[1].transform.position[0] =  1.0;
 
     size_t index = 0;
     for (size_t i = 0; i < scene.entities.size(); i++) {

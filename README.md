@@ -31,6 +31,7 @@ sudo apt update && sudo apt install vulkan-sdk mesa-common-dev libglfw3 libglfw3
 Install [Bazel](https://docs.bazel.build/versions/4.2.1/install-ubuntu.html). Example using [npm](https://nodejs.org/en/):
 
 ```bash
+sudo apt install npm    # if you don't have npm installed
 sudo npm install -g @bazel/bazelisk
 ```
 
