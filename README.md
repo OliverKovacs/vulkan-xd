@@ -31,8 +31,7 @@ sudo apt update && sudo apt install vulkan-sdk mesa-common-dev libglfw3 libglfw3
 Install [Bazel](https://docs.bazel.build/versions/4.2.1/install-ubuntu.html). Example using [npm](https://nodejs.org/en/):
 
 ```bash
-sudo apt install npm
-sudo npm install -g @bazel/bazelisk
+sudo apt install npm && sudo npm install -g @bazel/bazelisk
 ```
 
 Download the project:
@@ -42,7 +41,7 @@ git clone https://github.com/OliverKovacs/vulkan-xd && cd vulkan-xd && git submo
 
 Build the project:
 ```bash
-sudo bazel build //src/main:main
+bazel build //src/main:main
 ```
 
 Run:
