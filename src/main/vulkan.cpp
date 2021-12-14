@@ -11,6 +11,12 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "src/include/stb/stb_image.h"
 
+#ifdef PROFILER
+#include <coz.h>
+#else
+#define COZ_PROGRESS
+#endif
+
 #include "vertex.cpp"
 #include "xdvk.cpp"
 
@@ -1505,6 +1511,8 @@ private:
     }
 
     void drawFrame() {
+
+        COZ_PROGRESS
 
         lastTime = now;
         now = std::chrono::high_resolution_clock::now();
