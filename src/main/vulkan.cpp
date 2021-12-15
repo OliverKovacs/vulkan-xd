@@ -19,6 +19,7 @@
 
 #include "vertex.cpp"
 #include "xdvk.cpp"
+#include "config.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -1611,13 +1612,34 @@ private:
     }
 
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
-        for (const auto& availablePresentMode : availablePresentModes) {
-            if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-                return availablePresentMode;
+        for (const auto& preferredPresentMode : config.preferredPresentModes) {
+            for (const auto& availablePresentMode : availablePresentModes) {
+                if (availablePresentMode == preferredPresentMode) {
+                    return availablePresentMode;
+                }
             }
         }
 
         return VK_PRESENT_MODE_FIFO_KHR;
+    }
+
+    std::string getSwapChainPresentModeName(VkPresentModeKHR presentMode) {
+        switch(presentMode) {
+            case VK_PRESENT_MODE_IMMEDIATE_KHR:
+                return "VK_PRESENT_MODE_IMMEDIATE_KHR";
+            case VK_PRESENT_MODE_MAILBOX_KHR:
+                return "VK_PRESENT_MODE_MAILBOX_KHR";
+            case VK_PRESENT_MODE_FIFO_KHR:
+                return "VK_PRESENT_MODE_FIFO_KHR";
+            case VK_PRESENT_MODE_FIFO_RELAXED_KHR:
+                return "VK_PRESENT_MODE_FIFO_RELAXED_KHR";
+            case VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR:
+                return "VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR";
+            case VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR:
+                return "VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR";
+            default:
+                return "unknown (" + std::to_string(presentMode) + ")";
+        }
     }
 
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {

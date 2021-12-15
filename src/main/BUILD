@@ -11,6 +11,12 @@ config_setting(
 )
 
 cc_library(
+    name = "config",
+    srcs = ["config.hpp"],
+    hdrs = ["config.hpp"],
+)
+
+cc_library(
     name = "keybinds",
     srcs = ["keybinds.cpp"],
     hdrs = ["keybinds.cpp"],
@@ -36,6 +42,7 @@ cc_library(
     srcs = ["vulkan.cpp"],
     hdrs = ["vulkan.cpp"],
     deps = [
+        ":config",
         ":vertex",
         ":xdvk",
         "//src/include:stb",
