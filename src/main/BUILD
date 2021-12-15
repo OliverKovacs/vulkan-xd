@@ -30,8 +30,8 @@ cc_library(
 
 cc_library(
     name = "xdvk",
-    srcs = ["xdvk.cpp"],
-    hdrs = ["xdvk.cpp"],
+    srcs = ["xdvk.cpp", "xdvk.hpp"],
+    hdrs = ["xdvk.cpp", "xdvk.hpp"],
     deps = [
         ":vertex",
     ]

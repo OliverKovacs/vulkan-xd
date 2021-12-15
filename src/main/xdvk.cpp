@@ -6,126 +6,64 @@
 #include <algorithm>
 #include "vertex.cpp"
 
+#include "xdvk.hpp"
+
 namespace xdvk {
 
     template<uint32_t D>
-    struct Transform {
-        float buffer[2 * D + D * (D - 1) / 2];
-        float *position = buffer;
-        float *scale = &buffer[D];
-        float *rotation = &buffer[2 * D];
-        
-        Transform() {
-            std::fill_n(buffer, 2 * D + D * (D - 1) / 2, 0.0f);
-            std::fill_n(scale, D, 1.0f);
-        };
-    };
-
-    struct Geometry {
-
-        std::vector<float> vertices;
-        
-        VkBuffer vertexBuffer;
-        VkDeviceMemory vertexBufferMemory;
-
-        VkBuffer indexBuffer;
-        VkDeviceMemory indexBufferMemory;
-        uint32_t indexBufferSize;
-        bool drawIndexed = true;
-
-        size_t vertexBufferIndex;
-        size_t indexBufferIndex;
-        size_t transformBufferIndex;
-    };
-
-    template<uint32_t D>
-    struct Entity {
-        uint64_t id;
-        uint64_t components;
-        Transform<D> transform;
-        Geometry geometry;
-    };
-
-    struct Index {
-        uint64_t id;
-        uint32_t index;
-        uint32_t next;
+    Transform<D>::Transform() {
+        std::fill_n(buffer, 2 * D + D * (D - 1) / 2, 0.0f);
+        std::fill_n(scale, D, 1.0f);
     };
 
     #define INDEX_MASK 0xffffffff
     #define NEW_OBJECT_ID_ADD 0x100000000
     template<uint32_t D>
-    class Scene {
-        public:
-        
-        std::vector<Index> indices;
-        std::vector<Entity<D>> entities;
-        
-        Scene(size_t reserve) {
-            indices.resize(reserve);
-            entities.reserve(reserve);
-            entity_count = 0;
-            for (size_t i = 0; i < reserve; i++) {
-                indices[i].id = i;
-                indices[i].next = i + 1;
-            }
-            freelist = 0;
-        };
-
-        bool has(uint64_t id) {
-            Index &index = indices[id & INDEX_MASK];
-            return index.id == id && index.index != UINT32_MAX;
+    Scene<D>::Scene(size_t reserve) {
+        indices.resize(reserve);
+        entities.reserve(reserve);
+        entity_count = 0;
+        for (size_t i = 0; i < reserve; i++) {
+            indices[i].id = i;
+            indices[i].next = i + 1;
         }
-
-        Entity<D> &get(uint64_t id) {
-            return entities[indices[id & INDEX_MASK].index];
-        }
-
-        uint64_t add() {
-            Index &index = indices[freelist];
-            freelist = index.next;
-            index.id += NEW_OBJECT_ID_ADD;
-            index.index = entity_count++;
-            Entity<D> &entity = entities.emplace_back();
-            // Entity<D> &entity = entities[index.index];
-            entity.id = index.id;
-            return entity.id;
-        }
-
-        void remove(uint64_t id) {
-            Index &index = indices[id & INDEX_MASK];
-            Entity<D> &entity = entities[index.index];
-            entity = entities[--entity_count];
-            entities.pop_back();
-            indices[entity.id & INDEX_MASK].index = index.index;
-            index.index = UINT32_MAX;
-            index.next = freelist;
-            freelist = id & INDEX_MASK;
-        }
-
-        private:
-        uint32_t entity_count;
-        uint32_t freelist;
+        freelist = 0;
     };
 
-    void hypercube(std::vector<float> &vertices, std::vector<uint32_t> &indices, uint32_t dimension);
-    void hypercubeVertices(std::vector<float> &vertices, uint32_t dimension, float size, uint32_t stride, uint32_t offset);
-    void hypercubeIndices(std::vector<uint32_t> &indices, uint32_t dimension, uint32_t stride, uint32_t offset);
+    template<uint32_t D>
+    bool Scene<D>::has(uint64_t id) {
+        Index &index = indices[id & INDEX_MASK];
+        return index.id == id && index.index != UINT32_MAX;
+    }
 
     template<uint32_t D>
-    void hypercubeTransform(std::vector<float> &buffer, Transform<D> transform, uint32_t index, uint32_t stride, uint32_t offset);
+    Entity<D> &Scene<D>::get(uint64_t id) {
+        return entities[indices[id & INDEX_MASK].index];
+    }
 
-    size_t rotationSize(const uint32_t dimension);
-    uint32_t transformSize(const uint32_t dimension);
+    template<uint32_t D>
+    uint64_t Scene<D>::add() {
+        Index &index = indices[freelist];
+        freelist = index.next;
+        index.id += NEW_OBJECT_ID_ADD;
+        index.index = entity_count++;
+        Entity<D> &entity = entities.emplace_back();
+        // Entity<D> &entity = entities[index.index];
+        entity.id = index.id;
+        return entity.id;
+    }
 
-    template<typename T>
-    void printVector(std::vector<T> vector, std::string name = "");
-
-    template<typename T, size_t N>
-    void printArray(std::array<T, N> vector, std::string name = "");
-}
-
-namespace xdvk {
+    template<uint32_t D>
+    void Scene<D>::remove(uint64_t id) {
+        Index &index = indices[id & INDEX_MASK];
+        Entity<D> &entity = entities[index.index];
+        entity = entities[--entity_count];
+        entities.pop_back();
+        indices[entity.id & INDEX_MASK].index = index.index;
+        index.index = UINT32_MAX;
+        index.next = freelist;
+        freelist = id & INDEX_MASK;
+    }
 
     void createHypercubeVertices(std::vector<float> &vertices, const uint32_t dimension, float size) {
         const uint32_t block = 1;
