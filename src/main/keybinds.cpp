@@ -28,4 +28,4 @@ struct Keybinds {
     };
 };
 
-Keybinds keybinds {};
+const Keybinds keybinds {};

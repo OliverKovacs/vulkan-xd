@@ -1,7 +1,8 @@
+#include <algorithm>
 #include "vulkan.cpp"
 #include "keybinds.cpp"
+#include "xdvk.hpp"
 
-#include <algorithm>
 
 void Vulkan::callback() {
     for (size_t i = 0; i < scene.entities.size(); i++) {
@@ -81,7 +82,7 @@ void Vulkan::createModel() {
     // xdvk::printVector(storageVectors[0], "storageVectors0");
 }
 
-int main() {
+auto main() -> int {
     Vulkan app;
 
     try {

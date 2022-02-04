@@ -1,79 +1,23 @@
 // Oliver Kovacs 2021 - xdvk - MIT
 
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include <vector>
 #include <algorithm>
-#include "vertex.cpp"
-
+#include "vertex.hpp"
 #include "xdvk.hpp"
 
 namespace xdvk {
 
-    template<uint32_t D>
-    Transform<D>::Transform() {
-        std::fill_n(buffer, 2 * D + D * (D - 1) / 2, 0.0f);
-        std::fill_n(scale, D, 1.0f);
-    };
-
-    #define INDEX_MASK 0xffffffff
-    #define NEW_OBJECT_ID_ADD 0x100000000
-    template<uint32_t D>
-    Scene<D>::Scene(size_t reserve) {
-        indices.resize(reserve);
-        entities.reserve(reserve);
-        entity_count = 0;
-        for (size_t i = 0; i < reserve; i++) {
-            indices[i].id = i;
-            indices[i].next = i + 1;
-        }
-        freelist = 0;
-    };
-
-    template<uint32_t D>
-    bool Scene<D>::has(uint64_t id) {
-        Index &index = indices[id & INDEX_MASK];
-        return index.id == id && index.index != UINT32_MAX;
-    }
-
-    template<uint32_t D>
-    Entity<D> &Scene<D>::get(uint64_t id) {
-        return entities[indices[id & INDEX_MASK].index];
-    }
-
-    template<uint32_t D>
-    uint64_t Scene<D>::add() {
-        Index &index = indices[freelist];
-        freelist = index.next;
-        index.id += NEW_OBJECT_ID_ADD;
-        index.index = entity_count++;
-        Entity<D> &entity = entities.emplace_back();
-        // Entity<D> &entity = entities[index.index];
-        entity.id = index.id;
-        return entity.id;
-    }
-
-    template<uint32_t D>
-    void Scene<D>::remove(uint64_t id) {
-        Index &index = indices[id & INDEX_MASK];
-        Entity<D> &entity = entities[index.index];
-        entity = entities[--entity_count];
-        entities.pop_back();
-        indices[entity.id & INDEX_MASK].index = index.index;
-        index.index = UINT32_MAX;
-        index.next = freelist;
-        freelist = id & INDEX_MASK;
-    }
-
     void createHypercubeVertices(std::vector<float> &vertices, const uint32_t dimension, float size) {
         const uint32_t block = 1;
-        const uint32_t n1 = pow(2, dimension);
+        const auto n1 = static_cast<uint32_t>(pow(2, dimension));
         const uint32_t n2 = dimension;
-        vertices.resize(n1 * n2 * block);
+        vertices.resize(static_cast<size_t>(n1) * n2 * block);
         for (size_t i = 0; i < n1; i++) {
             for (size_t j = 0; j < n2; j++) {
                 const uint32_t index = (i * n2 + j) * block;
-                vertices[index] = size * (1.0 - ((uint32_t)floor(i / pow(2.0, j)) % 2) * 2.0);
+                vertices[index] = size * (1.0 - (static_cast<uint32_t>(floor(i / pow(2.0, j))) % 2) * 2.0);
             }
         }
     }
@@ -86,7 +30,7 @@ namespace xdvk {
         for (size_t i = 0; i < n1; i++) {
             for (size_t j = 0; j < n2; j++) {
                 const uint32_t index = offset + (i * n2 + j) * block;
-                vertices[index] = - size * (1.0 - ((uint32_t)floor(i / pow(2.0, j)) % 2) * 2.0);
+                vertices[index] = - size * (1.0 - (static_cast<uint32_t>(floor(i / pow(2.0, j))) % 2) * 2.0);
             }
         }
     }
@@ -98,7 +42,7 @@ namespace xdvk {
         buffer.resize(offset + n1 * n2 * block);
         for (size_t i = 0; i < n1; i++) {
             for (size_t j = 0; j < n2; j++) {
-                const uint32_t base = (j % (uint32_t)pow(2, i)) + pow(2, (i + 1)) * floor(j / pow(2, i));
+                const uint32_t base = (j % static_cast<uint32_t>(pow(2, i))) + pow(2, (i + 1)) * floor(j / pow(2, i));
                 const uint32_t index = offset + (i * n2 + j) * block;
                 buffer[index]     = base;
                 buffer[index + 1] = base + pow(2, i);
@@ -135,7 +79,7 @@ namespace xdvk {
         for (size_t i = 0; i < n1; i++) {
             for (size_t j = 0; j < n2; j++) {
                 const uint32_t index = offset + (i * n2 + j) * block;
-                buffer[index] = j == floor(i / 2) ? (i % 2 ? size : -size) : 0.0f;
+                buffer[index] = j == (i / 2) ? (static_cast<bool>(i % 2) ? size : -size) : 0.0F;
             }
         }
         hypercubeVertices(buffer, 4, 0.5 * size, stride, _offset);
@@ -156,18 +100,18 @@ namespace xdvk {
             }
         }*/
 
-        buffer.resize(8 * 8 * 2);
+        buffer.resize(static_cast<size_t>(8 * 8 * 2));
         for (size_t i = 0; i < 8; i++) {
             for (size_t j = 0; j < 8; j++) {
                 const uint32_t index = i * 16 + j * 2;
                 buffer[index]     = i;
-                buffer[index + 1] = pow(2, i) * (j / pow(2, i)) + j % (uint32_t)pow(2, i) + 8;
+                buffer[index + 1] = pow(2, i) * (j / pow(2, i)) + j % static_cast<uint32_t>(pow(2, i)) + 8;
             }
         }
 
         xdvk::printVector(buffer, "buffer");
 
-        const size_t s = 96 * 2;
+        const auto s = static_cast<size_t>(96 * 2);
         buffer.resize(s);
         std::array<uint32_t, 192> array = {
              0,  8,
@@ -267,40 +211,14 @@ namespace xdvk {
             14, 22,
             15, 23
         };
-        std::copy_n(array.begin() + 0 * 2, s, buffer.begin());
+        std::copy_n(array.begin() + static_cast<ptrdiff_t>(0 * 2), s, buffer.begin());
     }
 
-    template<uint32_t D>
-    void hypercubeTransform(std::vector<float> &buffer, Transform<D> transform, uint32_t index, uint32_t stride, uint32_t offset) {
-        uint32_t size = transformSize(D);
-        const uint32_t block = size + stride;
-        buffer.resize(offset + (index + 1) * block);
-        std::copy_n(&transform.buffer[offset + index * stride], size, buffer.begin());
-    }
-
-    size_t rotationSize(const uint32_t dimension) {
+    auto rotationSize(const uint32_t dimension) -> size_t {
         return dimension * (dimension - 1) / 2;
     }
 
-    uint32_t transformSize(const uint32_t dimension) {
-        return 2 * dimension + rotationSize(dimension);
-    }
-
-    template<typename T>
-    void printVector(std::vector<T> vector, std::string name) {
-        std::cout << name << "[" << vector.size() << "] = [ ";
-        for (auto elem : vector) {
-            std::cout << elem << " ";
-        }
-        std::cout << "]" << std::endl;
-    }
-
-    template<typename T, size_t N>
-    void printArray(std::array<T, N> vector, std::string name) {
-        std::cout << name << "[" << vector.size() << "] = [ ";
-        for (auto elem : vector) {
-            std::cout << elem << " ";
-        }
-        std::cout << "]" << std::endl;
+    auto transformSize(const uint32_t dimension) -> uint32_t {
+        return 2 * dimension + static_cast<uint32_t>(rotationSize(dimension));
     }
 }

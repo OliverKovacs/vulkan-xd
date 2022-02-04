@@ -24,17 +24,17 @@ cc_library(
 
 cc_library(
     name = "vertex",
-    srcs = ["vertex.cpp"],
-    hdrs = ["vertex.cpp"],
+    srcs = ["vertex.cpp", "vertex.hpp"],
+    hdrs = ["vertex.cpp", "vertex.hpp"],
 )
 
 cc_library(
     name = "xdvk",
-    srcs = ["xdvk.cpp", "xdvk.hpp"],
-    hdrs = ["xdvk.cpp", "xdvk.hpp"],
+    srcs = ["xdvk.cpp", "xdvk.hpp", "xdvk.t.hpp"],
+    hdrs = ["xdvk.cpp", "xdvk.hpp", "xdvk.t.hpp"],
     deps = [
         ":vertex",
-    ]
+    ],
 )
 
 cc_library(
@@ -42,9 +42,9 @@ cc_library(
     srcs = ["vulkan.cpp"],
     hdrs = ["vulkan.cpp"],
     deps = [
+        ":xdvk",
         ":config",
         ":vertex",
-        ":xdvk",
         "//src/include:stb",
     ],
     data = [
@@ -63,7 +63,8 @@ cc_binary(
     ],
     deps = [
         ":vulkan",
-        ":keybinds"
+        ":keybinds",
+        ":xdvk",
     ],
     local_defines = select({
         "profile_mode": ["PROFILER"],
