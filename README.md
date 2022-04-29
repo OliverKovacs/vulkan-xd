@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/github/license/OliverKovacs/vulkan-xd)](https://github.com/OliverKovacs/vulkan-xd/blob/main/LICENSE.md)
 [![Size](https://img.shields.io/github/repo-size/OliverKovacs/vulkan-xd)]()
 
-Higher-dimensional renderer implemented in [Vulkan](https://www.vulkan.org/). This is mainly a reseach project. 
+Higher-dimensional renderer implemented in [Vulkan](https://www.vulkan.org/). This is mainly a research project. 
 
 Currently only Ubuntu is actively supported, however you might be able to run it on other Linux distributions.
 
