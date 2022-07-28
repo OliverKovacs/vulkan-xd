@@ -46,6 +46,7 @@ cc_library(
         ":config",
         ":vertex",
         "//src/include:stb",
+        "@fmt",
     ],
     data = [
         "//src/assets:assets",
