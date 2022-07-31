@@ -40,23 +40,26 @@
 
 #define UNUSED(expr) do { (void)(expr); } while (0)
 
-const uint32_t DIMENSION = 4;
 
 const std::string TEXTURE_PATH = "./src/assets/texture.png";
+const std::string SHADER_DIRECTORY = "./src/shaders/";
+const std::string VERT_SHADER = "shader.vert.spv";
+const std::string FRAG_SHADER = "shader.frag.spv";
 
-const int MAX_FRAMES_IN_FLIGHT = 2;
+const size_t MAX_FRAMES_IN_FLIGHT = 2;
 
+const uint32_t DIMENSION = 4;
 const std::vector<size_t> SSBO_RESERVE_SIZE = {
     1024 * DIMENSION,
     1024 * DIMENSION,
     255
 };
 
-const std::vector<const char*> validationLayers = {
+const std::vector<const char*> VALIDATION_LAYERS = {
     "VK_LAYER_KHRONOS_validation"
 };
 
-const std::vector<const char*> deviceExtensions = {
+const std::vector<const char*> DEVICE_EXTENSIONS = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
@@ -396,7 +399,7 @@ private:
     }
 
     void createInstance() {
-        if (enableValidationLayers && !checkValidationLayerSupport()) {
+        if (enableValidationLayers && !checkValidationLayerSupport(VALIDATION_LAYERS)) {
             throw std::runtime_error("validation layers requested, but not available!");
         }
 
@@ -418,8 +421,8 @@ private:
 
         VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
         if (enableValidationLayers) {
-            createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-            createInfo.ppEnabledLayerNames = validationLayers.data();
+            createInfo.enabledLayerCount = static_cast<uint32_t>(VALIDATION_LAYERS.size());
+            createInfo.ppEnabledLayerNames = VALIDATION_LAYERS.data();
 
             populateDebugMessengerCreateInfo(debugCreateInfo);
             createInfo.pNext = &debugCreateInfo;
@@ -515,12 +518,12 @@ private:
 
         createInfo.pEnabledFeatures = &deviceFeatures;
 
-        createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
-        createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+        createInfo.enabledExtensionCount = static_cast<uint32_t>(DEVICE_EXTENSIONS.size());
+        createInfo.ppEnabledExtensionNames = DEVICE_EXTENSIONS.data();
 
         if (enableValidationLayers) {
-            createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-            createInfo.ppEnabledLayerNames = validationLayers.data();
+            createInfo.enabledLayerCount = static_cast<uint32_t>(VALIDATION_LAYERS.size());
+            createInfo.ppEnabledLayerNames = VALIDATION_LAYERS.data();
         } else {
             createInfo.enabledLayerCount = 0;
         }
@@ -694,14 +697,8 @@ private:
     }
 
     void createGraphicsPipeline() {
-        // auto vertShaderCode = readFile("./shaders/shader.vert.spv");
-        // auto fragShaderCode = readFile("./shaders/shader.frag.spv");
-
-        auto vertShaderCode = readFile("./src/shaders/shader.vert.spv");
-        auto fragShaderCode = readFile("./src/shaders/shader.frag.spv");
-
-        VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
-        VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
+        VkShaderModule vertShaderModule = createShaderModuleFromPath(VERT_SHADER);
+        VkShaderModule fragShaderModule = createShaderModuleFromPath(FRAG_SHADER);
 
         //TODO dynamic specialisation maps
         std::array<VkSpecializationMapEntry, 1> specializationMapEntries{};
@@ -1571,6 +1568,15 @@ private:
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
+    auto createShaderModuleFromPath(std::string path) -> VkShaderModule {
+        auto shaderCode = readShaderCode(path);
+        return createShaderModule(shaderCode);
+    }
+
+    auto readShaderCode(std::string path) -> std::vector<char> {
+        return readFile(fmt::format("{}{}", SHADER_DIRECTORY, path));
+    }
+
     auto createShaderModule(const std::vector<char>& code) -> VkShaderModule {
         VkShaderModuleCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -1670,7 +1676,7 @@ private:
     auto isDeviceSuitable(VkPhysicalDevice device) -> bool {
         QueueFamilyIndices indices = findQueueFamilies(device);
 
-        bool extensionsSupported = checkDeviceExtensionSupport(device);
+        bool extensionsSupported = checkDeviceExtensionSupport(device, DEVICE_EXTENSIONS);
 
         bool swapChainAdequate = false;
         if (extensionsSupported) {
@@ -1684,7 +1690,7 @@ private:
         return indices.isComplete() && extensionsSupported && swapChainAdequate && static_cast<bool>(supportedFeatures.samplerAnisotropy);
     }
 
-    static auto checkDeviceExtensionSupport(VkPhysicalDevice device) -> bool {
+    static auto checkDeviceExtensionSupport(VkPhysicalDevice device, std::vector<const char*> deviceExtensions) -> bool {
         uint32_t extensionCount;
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
@@ -1709,7 +1715,7 @@ private:
         std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
         vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
-        int i = 0;
+        uint32_t i = 0;
         for (const auto& queueFamily : queueFamilies) {
             if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 indices.graphicsFamily = i;
@@ -1746,7 +1752,7 @@ private:
         return extensions;
     }
 
-    static auto checkValidationLayerSupport() -> bool {
+    static auto checkValidationLayerSupport(std::vector<const char*> validationLayers) -> bool {
         uint32_t layerCount;
         vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -1763,9 +1769,7 @@ private:
                 }
             }
 
-            if (!layerFound) {
-                return false;
-            }
+            if (!layerFound) return false;
         }
 
         return true;
