@@ -9,9 +9,9 @@
 #include <glm/gtx/hash.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "src/include/stb/stb_image.h"
+#include "../include/stb/stb_image.h"
 
-#include "fmt/core.h"
+// #include "fmt/core.h"
 
 #ifdef PROFILER
 #include <coz.h>
@@ -36,13 +36,13 @@
 #include <optional>
 #include <set>
 #include <unordered_map>
-#include <experimental/source_location>
+#include <source_location>
 
 #define UNUSED(expr) do { (void)(expr); } while (0)
 
 
-const std::string TEXTURE_PATH = "./src/assets/texture.png";
-const std::string SHADER_DIRECTORY = "./src/shaders/";
+const std::string TEXTURE_PATH = "./assets/texture.png";
+const std::string SHADER_DIRECTORY = "./shaders/";
 const std::string VERT_SHADER = "shader.vert.spv";
 const std::string FRAG_SHADER = "shader.frag.spv";
 
@@ -120,16 +120,15 @@ namespace std {
 {                                                           \
     VkResult result = (r);                                  \
     if (result != VK_SUCCESS) {                             \
-        std::experimental::source_location location =       \
-            std::experimental::source_location::current();  \
-        throw std::runtime_error(fmt::format(               \
-            "ERROR: VkResult is {} at {}() at {}:{}:{}",    \
-            result,                                         \
-            location.function_name(),                       \
-            location.file_name(),                           \
-            location.line(),                                \
-            location.column()                               \
-        ));                                                 \
+        std::source_location location =                     \
+            std::source_location::current();                \
+        std::stringstream ss;                               \
+        ss << "ERROR: VkResult is " << result               \
+            << " at " <<  location.function_name()          \
+            << "() at " << location.file_name()             \
+            << ":" << location.line()                       \
+            << ":" << location.column();                    \
+        throw std::runtime_error(ss.str());                 \
     }                                                       \
 }
 
@@ -1574,7 +1573,8 @@ private:
     }
 
     auto readShaderCode(std::string path) -> std::vector<char> {
-        return readFile(fmt::format("{}{}", SHADER_DIRECTORY, path));
+        // return readFile(fmt::format("{}{}", SHADER_DIRECTORY, path));
+        return readFile(SHADER_DIRECTORY + path);
     }
 
     auto createShaderModule(const std::vector<char>& code) -> VkShaderModule {
@@ -1779,7 +1779,7 @@ private:
         std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
         if (!file.is_open()) {
-            throw std::runtime_error("failed to open file!");
+            throw std::runtime_error("failed to open file: " + filename);
         }
 
         auto fileSize = static_cast<size_t>(file.tellg());

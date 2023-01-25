@@ -76,44 +76,53 @@ namespace xdvk {
         const uint32_t n2 = 4;
         const uint32_t _offset = offset + 8 * 4 * block;
         buffer.resize(offset + 24 * 4 * block);
+
+        // { ±1, 0, 0, 0 } → 8 vertices
         for (size_t i = 0; i < n1; i++) {
             for (size_t j = 0; j < n2; j++) {
                 const uint32_t index = offset + (i * n2 + j) * block;
                 buffer[index] = j == (i / 2) ? (static_cast<bool>(i % 2) ? size : -size) : 0.0F;
             }
         }
+        
+        // { ±0.5, ±0.5, ±0.5, ±0.5 } → 16 vertices
         hypercubeVertices(buffer, 4, 0.5 * size, stride, _offset);
     }
 
     void icositetrachoronIndices(std::vector<uint32_t> &buffer, uint32_t stride, uint32_t offset) {
-        /*hypercubeIndices(buffer, 4, stride, offset);
-        const uint32_t block = 2 + stride;
-        const uint32_t _offset = 32 * block;
-        const uint32_t n1 = 16;
-        const uint32_t n2 = 8;
-        buffer.resize(offset + _offset + n1 * n2 * block);
-        for (size_t i = 0; i < n1; i++) {
-            for (size_t j = 0; j < n2; j++) {
-                const uint32_t index = offset + _offset + (i * n2 + j) * block;
-                buffer[index]     = i;
-                buffer[index + 1] = j + n2;
-            }
-        }*/
+        const size_t N_EDGES = 96;
+        buffer.resize(static_cast<size_t>(N_EDGES * 2));
 
-        buffer.resize(static_cast<size_t>(8 * 8 * 2));
-        for (size_t i = 0; i < 8; i++) {
-            for (size_t j = 0; j < 8; j++) {
-                const uint32_t index = i * 16 + j * 2;
-                buffer[index]     = i;
-                buffer[index + 1] = pow(2, i) * (j / pow(2, i)) + j % static_cast<uint32_t>(pow(2, i)) + 8;
+        // 64 edges
+        for (size_t i = 0; i < 4; i++) {
+            for (size_t j = 0; j < 2; j++) {
+                for (size_t k = 0; k < 8; k++) {
+                    const uint32_t index = i * 2 * 8 * 2 + j * 8 * 2 + k * 2;
+                    buffer[index]     = i * 2 + j;
+                    buffer[index + 1] = (k % (1 << i)) + (k / (1 << i) * (2 << i)) + 8 + j * pow(2, i);
+                }
             }
+        }
+        
+        // 32 edges
+        xdvk::hypercubeIndices(buffer, 4, stride, offset + 64 * 2);
+        for (size_t i = 0; i < 32 * 2; i++) {
+            buffer[i + 64 * 2] += 8;
         }
 
         xdvk::printVector(buffer, "buffer");
+    }
+    
+    auto rotationSize(const uint32_t dimension) -> size_t {
+        return dimension * (dimension - 1) / 2;
+    }
 
-        const auto s = static_cast<size_t>(96 * 2);
-        buffer.resize(s);
-        std::array<uint32_t, 192> array = {
+    auto transformSize(const uint32_t dimension) -> uint32_t {
+        return 2 * dimension + static_cast<uint32_t>(rotationSize(dimension));
+    }
+}
+
+/*
              0,  8,
              0, 10,
              0, 12,
@@ -130,6 +139,7 @@ namespace xdvk {
              1, 19,
              1, 21,
              1, 23,
+
              2,  8,
              2,  9,
              2, 12,
@@ -146,6 +156,7 @@ namespace xdvk {
              3, 19,
              3, 22,
              3, 23,
+
              4,  8,
              4,  9,
              4, 10,
@@ -162,6 +173,7 @@ namespace xdvk {
              5, 21,
              5, 22,
              5, 23,
+
              6,  8,
              6,  9,
              6, 10,
@@ -178,6 +190,7 @@ namespace xdvk {
              7, 21,
              7, 22,
              7, 23,
+
              8,  9,  
             10, 11,
             12, 13,
@@ -210,15 +223,4 @@ namespace xdvk {
             13, 21,
             14, 22,
             15, 23
-        };
-        std::copy_n(array.begin() + static_cast<ptrdiff_t>(0 * 2), s, buffer.begin());
-    }
-
-    auto rotationSize(const uint32_t dimension) -> size_t {
-        return dimension * (dimension - 1) / 2;
-    }
-
-    auto transformSize(const uint32_t dimension) -> uint32_t {
-        return 2 * dimension + static_cast<uint32_t>(rotationSize(dimension));
-    }
-}
+*/
