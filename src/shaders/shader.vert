@@ -67,7 +67,7 @@ void scaleVertex(inout float vertex[n], inout float scale[n]) {
     }
 }
 
-void rotateVertex(inout float vertex[n], inout float rotation[a_n], inout float scale[n]) {
+void rotateVertex(inout float vertex[n], inout float rotation[a_n]) {
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n; j++) {
             if (j <= i) continue;
@@ -90,7 +90,7 @@ void translateVertex(inout float vertex[n], inout float position[n]) {
 
 void transformVertex(inout float vertex[n], Transform transform) {
     scaleVertex(vertex, transform.scale);
-    rotateVertex(vertex, transform.rotation, transform.scale);
+    rotateVertex(vertex, transform.rotation);
     translateVertex(vertex, transform.position);
 }
 
