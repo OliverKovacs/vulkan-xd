@@ -48,11 +48,11 @@ const std::string FRAG_SHADER = "shader.frag.spv";
 
 const size_t MAX_FRAMES_IN_FLIGHT = 2;
 
-const uint32_t DIMENSION = 4;
+const uint32_t DIMENSION = 12;
 const std::vector<size_t> SSBO_RESERVE_SIZE = {
-    1024 * DIMENSION,
-    1024 * DIMENSION,
-    255
+    (1L << 32),
+    (1L << 32),
+    255,
 };
 
 const std::vector<const char*> VALIDATION_LAYERS = {
@@ -1411,6 +1411,8 @@ private:
             vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
                 vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+
+                // vkCmdSetLineWidth(commandBuffers[i], 5.0);
 
                 VkDeviceSize offsets[] = {0};
 

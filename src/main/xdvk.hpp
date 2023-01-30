@@ -11,8 +11,7 @@ namespace xdvk {
 
     template<uint32_t D>
     struct Transform {
-        // float buffer[2 * D + D * (D - 1) / 2]; // NOLINT(*-avoid-c-arrays)
-        float buffer[2 * D + D * (D - 1) / 2]; // NOLINT(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
+        float buffer[2 * D + D * (D - 1) / 2]; // NOLINT(*-avoid-c-arrays)
         float *position = buffer;
         float *scale = &buffer[D];
         float *rotation = &buffer[2 * D];
@@ -21,12 +20,15 @@ namespace xdvk {
     };
 
     struct Geometry {
-
+        
+        // ssbo vertex data
         std::vector<float> vertices;
         
+        // attribute vertex data
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
-
+        
+        // indexed draw data
         VkBuffer indexBuffer;
         VkDeviceMemory indexBufferMemory;
         uint32_t indexBufferSize;
@@ -70,12 +72,11 @@ namespace xdvk {
         uint32_t freelist;
     };
 
-    void createHypercubeVertices(std::vector<float> &vertices, uint32_t dimension, float size);
-    void hypercubeVertices(std::vector<float> &vertices, uint32_t dimension, float size, uint32_t stride, uint32_t offset);
-    void hypercubeIndices(std::vector<uint32_t> &buffer, uint32_t dimension, uint32_t stride, uint32_t offset);
-    void hypercubeEdges(std::vector<float> &buffer, uint32_t dimension, uint32_t stride, uint32_t offset);
-    void icositetrachoronVertices(std::vector<float> &buffer, float size, uint32_t stride, uint32_t offset);
-    void icositetrachoronIndices(std::vector<uint32_t> &buffer, uint32_t stride, uint32_t offset);
+    void hypercubeVertices(std::vector<float> &vertices, uint32_t dimension, float size, uint32_t stride = 0, uint32_t offset = 0);
+    void hypercubeIndices(std::vector<uint32_t> &buffer, uint32_t dimension, uint32_t stride = 0, uint32_t offset = 0);
+    void hypercubeEdges(std::vector<float> &buffer, uint32_t dimension, uint32_t stride = 0, uint32_t offset = 0);
+    void icositetrachoronVertices(std::vector<float> &buffer, float size, uint32_t stride = 0, uint32_t offset = 0);
+    void icositetrachoronIndices(std::vector<uint32_t> &buffer, uint32_t stride = 0, uint32_t offset = 0);
 
     template<uint32_t D>
     void hypercubeTransform(std::vector<float> &buffer, Transform<D> transform, uint32_t index, uint32_t stride, uint32_t offset);

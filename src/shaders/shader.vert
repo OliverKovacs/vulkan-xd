@@ -125,11 +125,11 @@ void main() {
     pos *= xy_scale;
     gl_Position = vec4(pos.xy, 0.0, 1.0);
 
-    float rgb_s = 2.0;
+    float rgb_s = 0.5;
     vec4 color = vec4(
-        sin(gl_VertexIndex * rgb_s + ubo.time + 0 * pi / 3),
-        sin(gl_VertexIndex * rgb_s + ubo.time + 2 * pi / 3),
-        sin(gl_VertexIndex * rgb_s + ubo.time + 4 * pi / 3),
+        sin(mod(gl_VertexIndex * rgb_s + ubo.time * 1 + 0 * pi / 3, 2 * pi)),
+        sin(mod(gl_VertexIndex * rgb_s + ubo.time * 1 + 2 * pi / 3, 2 * pi)),
+        sin(mod(gl_VertexIndex * rgb_s + ubo.time * 1 + 4 * pi / 3, 2 * pi)),
         1.0
     );
 

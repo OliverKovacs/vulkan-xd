@@ -2,6 +2,9 @@ CXX = clang++
 LIBS = -lvulkan -lglfw -ldl
 CXXFLAGS = -Wall -std=c++20 -stdlib=libstdc++ $(LIBS)
 
+debug:      CXXFLAGS    += -g
+release:    CXXFLAGS    += -O3
+
 GLSLC = glslc
 BEAR_CMD = bear
 MAKE_CMD = make
@@ -10,6 +13,7 @@ SRC_DIR = src
 SRC_CPP_DIR = $(SRC_DIR)/main
 SRC_ASSET_DIR = $(SRC_DIR)/assets
 SRC_SHADER_DIR = $(SRC_DIR)/shaders
+SRCS = $(SRC_CPP_DIR)/main.cpp $(SRC_CPP_DIR)/xdvk.cpp $(SRC_CPP_DIR)/vertex.cpp
 
 BUILD_DIR = build
 ASSET_DIR = $(BUILD_DIR)/assets
@@ -26,6 +30,9 @@ CACHE = .cache
 ALL = all
 
 $(ALL): $(BUILD_DIR) assets shaders $(PROGRAM_FULL)
+
+debug: $(ALL)
+release: $(ALL)
 
 run: $(ALL)
 	cd $(BUILD_DIR) && ./$(PROGRAM_NAME)
@@ -46,9 +53,8 @@ $(ASSET_DIR): $(BUILD_DIR)
 $(SHADER_DIR): $(BUILD_DIR)
 	mkdir -p $(SHADER_DIR)
 
-# $(wildcard $(SRC_CPP_DIR)/*.cpp)
-$(PROGRAM_FULL): $(SRC_CPP_DIR)/main.cpp $(SRC_CPP_DIR)/xdvk.cpp $(SRC_CPP_DIR)/vertex.cpp
-	$(CXX) $(CXXFLAGS) $^ -o $@
+$(PROGRAM_FULL): $(wildcard $(SRC_CPP_DIR)/*.cpp) $(wildcard $(SRC_CPP_DIR)/*.hpp)
+	$(CXX) $(CXXFLAGS) $(SRCS) -o $@
 
 $(SHADER_DIR)/shader.%.spv: $(SRC_SHADER_DIR)/shader.%
 	$(GLSLC) $^ -o $@
