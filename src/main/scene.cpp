@@ -1,5 +1,5 @@
-// #define SCENE_DEFAULT
-#define SCENE_HYPERCUBE
+#define SCENE_DEFAULT
+// #define SCENE_HYPERCUBE
 // #define SCENE_TESSERACTS
 
 #ifdef SCENE_DEFAULT

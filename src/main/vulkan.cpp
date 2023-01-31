@@ -48,7 +48,7 @@ const std::string FRAG_SHADER = "shader.frag.spv";
 
 const size_t MAX_FRAMES_IN_FLIGHT = 2;
 
-const uint32_t DIMENSION = 12;
+const uint32_t DIMENSION = 4;
 const std::vector<size_t> SSBO_RESERVE_SIZE = {
     (1L << 32),
     (1L << 32),
@@ -56,7 +56,8 @@ const std::vector<size_t> SSBO_RESERVE_SIZE = {
 };
 
 const std::vector<const char*> VALIDATION_LAYERS = {
-    "VK_LAYER_KHRONOS_validation"
+    "VK_LAYER_KHRONOS_validation",
+    // "VK_LAYER_MESA_overlay",
 };
 
 const std::vector<const char*> DEVICE_EXTENSIONS = {

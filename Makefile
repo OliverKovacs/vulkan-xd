@@ -24,6 +24,8 @@ PROGRAM_FULL = $(BUILD_DIR)/$(PROGRAM_NAME)
 VERT_SHADER = $(SHADER_DIR)/shader.vert.spv
 FRAG_SHADER = $(SHADER_DIR)/shader.frag.spv
 
+PROFILER_ENV = VK_INSTANCE_LAYERS=VK_LAYER_MESA_overlay VK_LAYER_MESA_OVERLAY_CONFIG=vertices=1,fps_sampling_period=10000
+
 COMPILATION_DB = compile_commands.json
 CACHE = .cache
 
@@ -36,6 +38,9 @@ release: $(ALL)
 
 run: $(ALL)
 	cd $(BUILD_DIR) && ./$(PROGRAM_NAME)
+
+profile: release
+	cd $(BUILD_DIR) && $(PROFILER_ENV) ./$(PROGRAM_NAME)
 
 assets: $(ASSET_DIR) asset_files
 
