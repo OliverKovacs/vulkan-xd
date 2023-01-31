@@ -48,7 +48,7 @@ const std::string FRAG_SHADER = "shader.frag.spv";
 
 const size_t MAX_FRAMES_IN_FLIGHT = 2;
 
-const uint32_t DIMENSION = 4;
+const uint32_t DIMENSION = 8;
 const std::vector<size_t> SSBO_RESERVE_SIZE = {
     (1L << 32),
     (1L << 32),
