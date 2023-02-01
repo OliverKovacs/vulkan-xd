@@ -38,7 +38,6 @@
 
 #define UNUSED(expr) do { (void)(expr); } while (0)
 
-
 const std::string TEXTURE_PATH = "./assets/texture.png";
 const std::string SHADER_DIRECTORY = "./shaders/";
 const std::string VERT_SHADER = "shader.vert.spv";
@@ -1205,7 +1204,6 @@ private:
         poolInfo.maxSets = static_cast<uint32_t>(swapChainImages.size());
 
         //TODO free poolSize
-
         VK_CHECK_RESULT(vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool))
     }
 

@@ -43,7 +43,6 @@ namespace xdvk {
         index.id += NEW_OBJECT_ID_ADD;
         index.index = entity_count++;
         Entity<D> &entity = entities.emplace_back();
-        // Entity<D> &entity = entities[index.index];
         entity.id = index.id;
         return entity.id;
     }
