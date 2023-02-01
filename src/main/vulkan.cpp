@@ -11,8 +11,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../include/stb/stb_image.h"
 
-// #include "fmt/core.h"
-
 #ifdef PROFILER
 #include <coz.h>
 #else

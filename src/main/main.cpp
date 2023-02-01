@@ -27,6 +27,8 @@ void Vulkan::callback() {
 auto main() -> int {
     Vulkan app;
 
+    std::cout << "vsync: " << config.vsync << std::endl;
+
     try {
         app.run();
     }
