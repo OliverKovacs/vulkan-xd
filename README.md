@@ -15,23 +15,18 @@ Documentation will be available in the future.
 - [GLFW](https://www.glfw.org/)
 - [GLM](https://github.com/g-truc/glm)
 - Some other platform specific headers
-- [Git](https://git-scm.com/), [Bazel](https://bazel.build/), [Clang](https://clang.llvm.org/) 
+- [Git](https://git-scm.com/), [Make](https://www.gnu.org/software/make/), [Clang](https://clang.llvm.org/) 
 
 ## Linux
 
 ### Ubuntu
 
-Install these dependencies:
-```bash
-wget -qO - https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
-sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.2.198-focal.list https://packages.lunarg.com/vulkan/1.2.198/lunarg-vulkan-1.2.198-focal.list
-sudo apt update && sudo apt install vulkan-sdk mesa-common-dev libglfw3 libglfw3-dev libglm-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxxf86vm-dev git clang
-```
-
-Install [Bazel](https://docs.bazel.build/versions/4.2.1/install-ubuntu.html). Example using [npm](https://nodejs.org/en/):
+Install these dependencies:  
+[Vulkan SDK](https://packages.lunarg.com/#)  
+Other packages:
 
 ```bash
-sudo apt install npm && sudo npm install -g @bazel/bazelisk
+sudo apt update && sudo apt install mesa-common-dev libglfw3 libglfw3-dev libglm-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxxf86vm-dev git clang
 ```
 
 Download the project:
@@ -41,12 +36,12 @@ git clone https://github.com/OliverKovacs/vulkan-xd && cd vulkan-xd && git submo
 
 Build the project:
 ```bash
-bazel build //src/main:main
+make all
 ```
 
 Run:
 ```bash
-bazel run //src/main:main
+make run
 ```
 
 ### Other distros
@@ -56,7 +51,6 @@ Repeat the steps above according to the distribution you are using. You will hav
 - [GLFW](https://www.glfw.org/download)
 - [GLM](https://github.com/g-truc/glm)
 - [Git](https://git-scm.com/download/linux)
-- [Bazel](https://docs.bazel.build/versions/4.2.1/install.html)
 
 ## Windows
 Windows is currently not supported, altough it could still work if you somehow manage to get all the dependencies working.
